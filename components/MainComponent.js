@@ -10,6 +10,25 @@ import { Icon } from 'react-native-elements';
 import About from './AboutUsComponent';
 import Contact from './ContactComponent';
 
+import { connect } from 'react-redux';
+import { fetchDishes, fetchComments, fetchPromos, fetchLeaders } from '../redux/ActionCreaters';
+
+const mapStateToProps = state => {
+  return {
+    dishes: state.dishes,
+    comments: state.comments,
+    promotions: state.promotions,
+    leaders: state.leaders
+  }
+}
+
+const mapDispatchToProps = dispatch => ({
+  fetchDishes: () => dispatch(fetchDishes()),
+  fetchComments: () => dispatch(fetchComments()),
+  fetchPromos: () => dispatch(fetchPromos()),
+  fetchLeaders: () => dispatch(fetchLeaders()),
+})
+
 const CustomDrawerContentComponent = (props) => (
   <ScrollView>
     <SafeAreaView style={styles.container} forceInset={{ top: 'always', horizontal: 'never' }}>
@@ -179,12 +198,21 @@ const MainNavigator = createDrawerNavigator(
   });
 
 class Main extends Component {
+  
   constructor(props) {
     super(props);
     this.state = {
         dishes: DISHES,
         selectedDish: null
       };
+  }
+
+
+  componentDidMount() {
+    this.props.fetchDishes();
+    this.props.fetchComments();
+    this.props.fetchPromos();
+    this.props.fetchLeaders();
   }
 
   onDishSelect(dishId) {
@@ -225,4 +253,4 @@ const styles = StyleSheet.create({
   }
 });
   
-export default Main;
+export default connect(mapStateToProps, mapDispatchToProps)(Main);

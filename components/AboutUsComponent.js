@@ -2,7 +2,16 @@ import React, { Component } from 'react';
 import { ScrollView, View , Image } from 'react-native';
 import { Card, Text } from 'react-native-elements';
 import { LEADERS } from '../shared/leaders.js';
+import { FlatList } from 'react-native';
+import { ListItem } from 'react-native-elements';
+import { connect } from 'react-redux';
+import { baseUrl } from '../shared/base_url';
 
+const mapStateToProps = state => {
+    return {
+      leaders: state.leaders
+    }
+  }
 
 function RenderLeader({leader}){
     return(
@@ -10,7 +19,7 @@ function RenderLeader({leader}){
           <Image
             resizeMode="cover"
             style={{height:50,width:50, margin: 2}}
-            source={require('./images/alberto.png')}
+            source={{uri: baseUrl+leader.image}}
           />
           <View style={{flex: 1,flexDirection: "column"}}>
           <Text h4 style={{ margin : 2}}>{leader.name}</Text>
@@ -26,16 +35,11 @@ class About extends Component {
         title: 'About',
     };
 
-    constructor(props){
-        super(props);
-        this.state = {
-            leaders : LEADERS
-        }
-    }
 
     render(){
 
-        const leadersR = this.state.leaders.map((leader)=>{
+        alert('leader',this.props.leaders.leaders)
+        const leadersR = this.props.leaders.leaders.map((leader)=>{
             return <RenderLeader leader={leader}/>
         })
 
@@ -62,4 +66,4 @@ class About extends Component {
     }
 }
 
-export default About;
+export default connect(mapStateToProps)(About);

@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { Text, View, ScrollView, FlatList } from 'react-native';
-import { Card, Icon } from 'react-native-elements';
+import { Text, View, ScrollView, FlatList, Modal, Button } from 'react-native';
+import { Card, Icon, Input,Rating } from 'react-native-elements';
 import { DISHES } from '../shared/dishes';
 import { COMMENTS } from '../shared/comments';
 import { connect } from 'react-redux';
 import { baseUrl } from '../shared/base_url';
-import { postFavorite } from '../redux/ActionCreaters';
+import { postFavorite, postComment } from '../redux/ActionCreaters';
 
 const mapStateToProps = state => {
     return {
@@ -16,7 +16,8 @@ const mapStateToProps = state => {
   }
 
   const mapDispatchToProps = dispatch => ({
-      postFavorite: (dishId) => dispatch(postFavorite(dishId))
+      postFavorite: (dishId) => dispatch(postFavorite(dishId)),
+      postComment: (comment) => dispatch(postComment(comment))
   })
 
 function RenderComments(props) {
@@ -45,12 +46,68 @@ function RenderComments(props) {
     );
 }
 
-function RenderDish(props) {
+class RenderDish extends React.Component {
 
-    const dish = props.dish;
+
+    constructor(props){
+        super(props);
+
+        this.state = {
+            isModalOpen : false,
+            rating : 0,
+            author: '',
+            comment: ''
+        }
+        //this.toggleM = this.toggleM.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+    }
+
+    ratingCompleted(rating1) {
+        this.setState({
+            rating: rating1
+        })
+        console.log("Rating is: " + rating)
+      }      
+
+    toggleModal(){
+        console.log('change state');
+        console.log(this.state.isModalOpen);
+        this.setState({
+            isModalOpen: !this.state.isModalOpen
+        });
+        console.log(this.state.isModalOpen);
+    }
+
+    ratingCompleted(rating) {
+        console.log("Rating is: " + rating)
+      }
+
+      handleChange(evt){
+          this.setState({
+              [evt.target.name]: evt.target.value
+          })
+          console.log(evt.target.value);
+      }
+
+      submitComment(){
+          const comment = {
+              id: 0,
+              dishId: this.props.dish.id,
+              author: this.state.author,
+              rating: this.state.rating,
+              comment: this.state.comment,
+              date: Date.now().toLocaleString()
+          }
+          console.log('comment at ', comment);
+          this.props.postComment(comment);
+      }
+
+    render(){
+    const dish = this.props.dish;
     
         if (dish != null) {
             return(
+                <View>
                 <Card
             featuredTitle={dish.name}
             image={require('./images/uthappizza.png')}>
@@ -60,17 +117,57 @@ function RenderDish(props) {
                 <Icon
                     raised
                     reverse
-                    name={ props.favorite ? 'heart' : 'heart-o'}
+                    name={ this.props.favorite ? 'heart' : 'heart-o'}
                     type='font-awesome'
                     color='#f50'
-                    onPress={() => props.favorite ? console.log('Already favorite') : props.onPress()}
+                    onPress={() => this.props.favorite ? console.log('Already favorite') : this.props.onPress()}
+                    />
+                <Icon
+                    raised
+                    reverse
+                    name='edit'
+                    type='font-awesome'
+                    color='#f50'
+                    onPress={()=>this.toggleModal()}
+                    onDismiss = {() => this.toggleModal() }
+                    onRequestClose = {() => this.toggleModal() }
                     />
             </Card>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={this.state.isModalOpen}
+                onRequestClose={() => {
+                Alert.alert("Modal has been closed.");
+                }}
+            >
+                <View>
+                <Card>
+                        <Rating type="star" onFinishRating={this.ratingCompleted} />
+                        <Input 
+                        value={this.state.author}
+                        onChangeText={(value)=>this.setState({author: value})}
+                         name='author'
+                        type="text" 
+                        placeholder="Author"/>
+                        <Input
+                         value={this.state.comment} 
+                         name='comment'
+                        onChangeText={(value)=>this.setState({comment: value})}
+                        type="text" 
+                        placeholder="Comment"/>
+                        <Button title='save' onPress={()=>this.submitComment()}></Button>
+                        <Button title='cancel' onPress={()=>this.toggleModal()}></Button>
+                </Card>
+                </View>
+            </Modal>
+            </View>
             );
         }
         else {
             return(<View></View>);
         }
+    }
 }
 
 class DishDetail extends Component {
@@ -89,7 +186,8 @@ class DishDetail extends Component {
             <ScrollView>
                 <RenderDish dish={this.props.dishes.dishes[+dishId]}
                     favorite={this.props.favorites.some(el => el === dishId)}
-                    onPress={() => this.markFavorite(dishId)} 
+                    onPress={() => this.markFavorite(dishId)}
+                    postComment = {this.props.postComment}
                     />
                 <RenderComments comments={this.props.comments.comments.filter((comment) => comment.dishId === dishId)} />
             </ScrollView>

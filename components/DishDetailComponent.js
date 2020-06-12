@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, ScrollView, FlatList, Modal, Button } from 'react-native';
+import { Text, View, ScrollView, FlatList, Modal, Button, Alert, PanResponder } from 'react-native';
 import { Card, Icon, Input,Rating } from 'react-native-elements';
 import { DISHES } from '../shared/dishes';
 import { COMMENTS } from '../shared/comments';
@@ -49,7 +49,6 @@ function RenderComments(props) {
 }
 
 class RenderDish extends React.Component {
-
 
     constructor(props){
         super(props);
@@ -105,11 +104,42 @@ class RenderDish extends React.Component {
       }
 
     render(){
+
+    const recognizeDrag = ({ moveX, moveY, dx, dy }) => {
+            if ( dx < -200 )
+                return true;
+            else
+                return false;
+        }
+    
+
     const dish = this.props.dish;
+
+    const panResponder = PanResponder.create({
+        onStartShouldSetPanResponder: (e, gestureState) => {
+            return true;
+        },
+        onPanResponderEnd: (e, gestureState) => {
+            console.log("pan responder end", gestureState);
+            if (recognizeDrag(gestureState))
+                Alert.alert(
+                    'Add Favorite',
+                    'Are you sure you wish to add ' + dish.name + ' to favorite?',
+                    [
+                    {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                    {text: 'OK', onPress: () => {this.props.favorite ? console.log('Already favorite') : this.props.onPress()}},
+                    ],
+                    { cancelable: false }
+                );
+
+            return true;
+        }
+    })
     
         if (dish != null) {
             return(
-                <Animatable.View animation="fadeInDown" duration={2000} delay={1000}>
+                <Animatable.View animation="fadeInDown" duration={2000} delay={1000}
+                {...panResponder.panHandlers}>
                     <View>
                     <Card
                         featuredTitle={dish.name}

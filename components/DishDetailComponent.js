@@ -103,6 +103,8 @@ class RenderDish extends React.Component {
           this.props.postComment(comment);
       }
 
+    handleView = ref => this.view = ref;
+
     render(){
 
     const recognizeDrag = ({ moveX, moveY, dx, dy }) => {
@@ -118,6 +120,10 @@ class RenderDish extends React.Component {
     const panResponder = PanResponder.create({
         onStartShouldSetPanResponder: (e, gestureState) => {
             return true;
+        },
+        onPanResponderGrant: () => {
+            this.view.rubberBand(1000)
+            .then(endState => console.log(endState.finished ? 'finished' : 'cancelled'))
         },
         onPanResponderEnd: (e, gestureState) => {
             console.log("pan responder end", gestureState);
@@ -139,6 +145,7 @@ class RenderDish extends React.Component {
         if (dish != null) {
             return(
                 <Animatable.View animation="fadeInDown" duration={2000} delay={1000}
+                ref={this.handleView}
                 {...panResponder.panHandlers}>
                     <View>
                     <Card

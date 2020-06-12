@@ -7,6 +7,8 @@ import { connect } from 'react-redux';
 import { baseUrl } from '../shared/base_url';
 import { postFavorite, postComment } from '../redux/ActionCreaters';
 
+import * as Animatable from 'react-native-animatable';
+
 const mapStateToProps = state => {
     return {
       dishes: state.dishes,
@@ -107,61 +109,63 @@ class RenderDish extends React.Component {
     
         if (dish != null) {
             return(
-                <View>
-                <Card
-            featuredTitle={dish.name}
-            image={require('./images/uthappizza.png')}>
-                <Text style={{margin: 10}}>
-                    {dish.description}
-                </Text>
-                <Icon
-                    raised
-                    reverse
-                    name={ this.props.favorite ? 'heart' : 'heart-o'}
-                    type='font-awesome'
-                    color='#f50'
-                    onPress={() => this.props.favorite ? console.log('Already favorite') : this.props.onPress()}
-                    />
-                <Icon
-                    raised
-                    reverse
-                    name='edit'
-                    type='font-awesome'
-                    color='#f50'
-                    onPress={()=>this.toggleModal()}
-                    onDismiss = {() => this.toggleModal() }
-                    onRequestClose = {() => this.toggleModal() }
-                    />
-            </Card>
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={this.state.isModalOpen}
-                onRequestClose={() => {
-                Alert.alert("Modal has been closed.");
-                }}
-            >
-                <View>
-                <Card>
-                        <Rating type="star" onFinishRating={this.ratingCompleted} />
-                        <Input 
-                        value={this.state.author}
-                        onChangeText={(value)=>this.setState({author: value})}
-                         name='author'
-                        type="text" 
-                        placeholder="Author"/>
-                        <Input
-                         value={this.state.comment} 
-                         name='comment'
-                        onChangeText={(value)=>this.setState({comment: value})}
-                        type="text" 
-                        placeholder="Comment"/>
-                        <Button title='save' onPress={()=>this.submitComment()}></Button>
-                        <Button title='cancel' onPress={()=>this.toggleModal()}></Button>
+                <Animatable.View animation="fadeInDown" duration={2000} delay={1000}>
+                    <View>
+                    <Card
+                        featuredTitle={dish.name}
+                        image={require('./images/uthappizza.png')}>
+                    <Text style={{margin: 10}}>
+                        {dish.description}
+                    </Text>
+                    <Icon
+                        raised
+                        reverse
+                        name={ this.props.favorite ? 'heart' : 'heart-o'}
+                        type='font-awesome'
+                        color='#f50'
+                        onPress={() => this.props.favorite ? console.log('Already favorite') : this.props.onPress()}
+                        />
+                    <Icon
+                        raised
+                        reverse
+                        name='edit'
+                        type='font-awesome'
+                        color='#f50'
+                        onPress={()=>this.toggleModal()}
+                        onDismiss = {() => this.toggleModal() }
+                        onRequestClose = {() => this.toggleModal() }
+                        />
                 </Card>
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={this.state.isModalOpen}
+                    onRequestClose={() => {
+                    Alert.alert("Modal has been closed.");
+                    }}
+                >
+                    <View>
+                    <Card>
+                            <Rating type="star" onFinishRating={this.ratingCompleted} />
+                            <Input 
+                            value={this.state.author}
+                            onChangeText={(value)=>this.setState({author: value})}
+                            name='author'
+                            type="text" 
+                            placeholder="Author"/>
+                            <Input
+                            value={this.state.comment} 
+                            name='comment'
+                            onChangeText={(value)=>this.setState({comment: value})}
+                            type="text" 
+                            placeholder="Comment"/>
+                            <Button title='save' onPress={()=>this.submitComment()}></Button>
+                            <Button title='cancel' onPress={()=>this.toggleModal()}></Button>
+                    </Card>
+                    </View>
+                </Modal>
                 </View>
-            </Modal>
-            </View>
+            </Animatable.View>
             );
         }
         else {
@@ -183,6 +187,7 @@ class DishDetail extends Component {
     render() {
         const dishId = this.props.navigation.getParam('dishId','');
         return(
+            <Animatable.View animation="fadeInUp" duration={2000} delay={1000}>
             <ScrollView>
                 <RenderDish dish={this.props.dishes.dishes[+dishId]}
                     favorite={this.props.favorites.some(el => el === dishId)}
@@ -191,6 +196,7 @@ class DishDetail extends Component {
                     />
                 <RenderComments comments={this.props.comments.comments.filter((comment) => comment.dishId === dishId)} />
             </ScrollView>
+            </Animatable.View>
         );
     }
 }

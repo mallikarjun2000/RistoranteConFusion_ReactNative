@@ -7,6 +7,7 @@ import { ListItem } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { baseUrl } from '../shared/base_url';
 import Loading from './LoadingComponent';
+import * as Animatable from 'react-native-animatable';
 
 const mapStateToProps = state => {
     return {
@@ -38,8 +39,6 @@ class About extends Component {
 
 
     render(){
-
-        alert('leader',this.props.leaders.leaders)
         const leadersR = this.props.leaders.leaders.map((leader)=>{
             return <RenderLeader leader={leader}/>
         })
@@ -69,6 +68,7 @@ class About extends Component {
         else
         if(this.props.leaders.errMess) {
             <ScrollView>
+                <Animatable.View animation="fadeInDown" duration={2000} delay={1000}>
                 <Card
                    featuredTitle="Our History" 
                    title="About us"
@@ -85,11 +85,13 @@ class About extends Component {
                 >
                    <Text>{this.props.leaders.errMess}</Text>
                 </Card>
+                </Animatable.View>
             </ScrollView>
         }
         else{
         return(
             <ScrollView>
+                <Animatable.View animation="fadeInDown" duration={2000} delay={1000}>
                 <Card
                    featuredTitle="Our History" 
                    title="About us"
@@ -106,6 +108,7 @@ class About extends Component {
                 >
                 {leadersR}
                 </Card>
+                </Animatable.View>
             </ScrollView>
         )
         }

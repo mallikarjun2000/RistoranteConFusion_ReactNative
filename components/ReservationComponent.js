@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Text, View, ScrollView, StyleSheet, Picker, Switch, Button, Modal } from 'react-native';
+import { Text, View, ScrollView, StyleSheet, Picker, Switch, Button, Modal, Alert } from 'react-native';
 import { Card } from 'react-native-elements';
 import DatePicker from 'react-native-datepicker'
+import * as Animatable from 'react-native-animatable';
 
 class Reservation extends Component {
 
@@ -45,13 +46,14 @@ class Reservation extends Component {
         this.setState({
             guests: 1,
             smoking: false,
-            date: ''
+            date: new Date().toISOString()
         });
     }
     
     render() {
         return(
             <ScrollView>
+            <Animatable.View delay={1000} animation="zoomIn" duration={1000}>
                 <View style={styles.formRow}>
                 <Text style={styles.formLabel}>Number of Guests</Text>
                 <Picker
@@ -103,7 +105,23 @@ class Reservation extends Component {
                 </View>
                 <View style={styles.formRow}>
                 <Button
-                    onPress={() => this.handleReservation()}
+                    onPress={() =>{
+                        this.handleReservation();
+                        Alert.alert(
+                            'Your Reservation OK?',
+                            'Number Guests : '+this.state.guests+'\n'+
+                            'Smoking? '+this.state.smoking+'\n'+
+                            'Date and Time : '+this.state.date,
+                            [
+                            {text: 'Cancel', onPress: () =>{this.toggleModal(), console.log('Cancel Pressed')}, style: 'cancel'},
+                            {
+                                text: 'OK',
+                                 onPress: () => {console.log('saved Item')}
+                            },
+                            ],
+                            { cancelable: false }
+                        );
+                   }}
                     title="Reserve"
                     color="#512DA8"
                     accessibilityLabel="Learn more about this purple button"
@@ -126,7 +144,7 @@ class Reservation extends Component {
                             />
                     </View>
                 </Modal>
-                
+                </Animatable.View>
             </ScrollView>
         );
     }

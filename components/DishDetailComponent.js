@@ -127,7 +127,7 @@ class RenderDish extends React.Component {
         },
         onPanResponderEnd: (e, gestureState) => {
             console.log("pan responder end", gestureState);
-            if (recognizeDrag(gestureState))
+            if (recognizeDrag(gestureState)){
                 Alert.alert(
                     'Add Favorite',
                     'Are you sure you wish to add ' + dish.name + ' to favorite?',
@@ -137,6 +137,11 @@ class RenderDish extends React.Component {
                     ],
                     { cancelable: false }
                 );
+            }
+            else
+            {
+                this.toggleModal();
+            }
 
             return true;
         }

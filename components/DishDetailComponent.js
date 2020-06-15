@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, ScrollView, FlatList, Modal, Button, Alert, PanResponder } from 'react-native';
+import { Text, View, ScrollView, FlatList, Modal, Button, Alert, PanResponder, Share } from 'react-native';
 import { Card, Icon, Input,Rating } from 'react-native-elements';
 import { DISHES } from '../shared/dishes';
 import { COMMENTS } from '../shared/comments';
@@ -61,6 +61,17 @@ class RenderDish extends React.Component {
         }
         //this.toggleM = this.toggleM.bind(this);
         this.handleChange = this.handleChange.bind(this);
+    }
+
+    shareDish = (title, message, url) => {
+        Share.share({
+            title: title,
+            message: title+': '+message+' '+ url,
+            url: url
+        },
+        {
+            dialogTitle: 'Share '+title
+        })
     }
 
     ratingCompleted(rating1) {
@@ -176,6 +187,15 @@ class RenderDish extends React.Component {
                         onPress={()=>this.toggleModal()}
                         onDismiss = {() => this.toggleModal() }
                         onRequestClose = {() => this.toggleModal() }
+                        />
+                        <Icon
+                        raised
+                        reverse
+                        name='share'
+                        type='font-awesome'
+                        color='#51D2AB'
+                        
+                        onPress={()=> this.shareDish(dish.name, dish.description, baseUrl + dish.image)}
                         />
                 </Card>
                 <Modal
